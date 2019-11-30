@@ -111,6 +111,7 @@ namespace horse_logger
 			}
 			return true;
 		}
+
 	};
 
 	class CharsetConvert
@@ -404,6 +405,12 @@ namespace horse_logger
 		else
 			outputDir_ += "/";
 
+    //确保configPath_所在文件夹存在,确保configPath_以.ini为扩展名
+    boost::filesystem::path path(configPath_);  
+    if(path.extension().string()!=".ini")
+      configPath_ += ".ini";
+    Tool::createDir(path.parent_path().string());
+    
 		read();
 	}
 
