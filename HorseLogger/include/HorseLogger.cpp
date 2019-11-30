@@ -623,7 +623,7 @@ namespace horse_logger
 #if defined(_WIN32) && defined(_DEBUG)
           enum { buf_size = 256 };
           char szTemp[buf_size] = { 0 };
-          _snprintf_s(szTemp, buf_size, "********************  horse logger info -- stop logger module[%s] begin !!!  ******************** \n", spConfig_->module().c_str());
+          _snprintf_s(szTemp, buf_size, "********************  horse logger info -- stop async file logger module[%s] begin !!!  ******************** \n", spConfig_->module().c_str());
           ::OutputDebugStringA(szTemp);
 #endif
 
@@ -632,7 +632,7 @@ namespace horse_logger
 
 #if defined(_WIN32) && defined(_DEBUG)
           memset(szTemp, 0, sizeof(szTemp));
-          _snprintf_s(szTemp, buf_size, "********************  horse logger info -- stop logger module[%s] end !!!  ******************** \n", spConfig_->module().c_str());
+          _snprintf_s(szTemp, buf_size, "********************  horse logger info -- stop async file logger module[%s] end !!!  ******************** \n", spConfig_->module().c_str());
           ::OutputDebugStringA(szTemp);
 #endif
 				}
