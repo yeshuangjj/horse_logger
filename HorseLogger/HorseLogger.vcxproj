@@ -314,7 +314,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_Lib|x64'">
       </PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="include\common.cpp" />
     <ClCompile Include="include\HorseLogger.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

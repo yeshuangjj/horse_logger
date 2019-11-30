@@ -257,7 +257,7 @@ namespace horse_logger
 		//路径配置 [文件输出时]
 		std::string    outputDir_;			// eg: d:test/
 		std::string    prefix_;			    // eg: login_
-		std::string    extension_; 		    // eg: .log 
+		std::string    extension_; 	    // eg: .log 
 		size_t         rotationSize_;		// eg: 1024*1024
 
 		tagConfigInitData(const char *module = __COMMON)
@@ -293,8 +293,17 @@ namespace horse_logger
 
 		void setOutputDir(const char * outputDir)
 		{
-			if (outputDir != nullptr && outputDir[0] != '\0')
-				outputDir_ = outputDir;
+      if (outputDir != nullptr && outputDir[0] != '\0')
+      {
+        outputDir_ = outputDir;
+        //确保strDir以 / 结尾
+        if (outputDir_.back() == '\\' || outputDir_.back() == '/')
+          ;
+        else
+          outputDir_ += "/";
+
+        outputDir_ += (module_+"/");
+      }				
 		}
 
 		void setPrefix(const char * prefix)
@@ -307,8 +316,17 @@ namespace horse_logger
 
 		void setExtension(const char * extension)
 		{
-			if (extension != nullptr && extension[0] != '\0')
-				extension_ = extension;
+      if (extension != nullptr && extension[0] != '\0')
+      {
+        extension_ = extension;
+        if (extension_.front() == '.')
+          ;
+        else
+          extension_ = "." + extension_;
+      }
+      else
+        extension_ = ".log";
+				
 		}
 
 		void setMinLevel(severity_level level) { min_level_ = level; }
@@ -400,17 +418,17 @@ namespace horse_logger
 		BOOST_ASSERT(module_.empty() == false && configPath_.empty() == false);
 
 		//确保defaultOutputDir_ 以 / 结尾
-		if (outputDir_.back() == '\\' || outputDir_.back() == '/')
-			;
-		else
-			outputDir_ += "/";
+    if (outputDir_.back() == '\\' || outputDir_.back() == '/')
+      ;
+    else
+      outputDir_ += "/";
 
     //确保configPath_所在文件夹存在,确保configPath_以.ini为扩展名
-    boost::filesystem::path path(configPath_);  
-    if(path.extension().string()!=".ini")
+    boost::filesystem::path path(configPath_);
+    if (path.extension().string() != ".ini")
       configPath_ += ".ini";
     Tool::createDir(path.parent_path().string());
-    
+
 		read();
 	}
 
@@ -565,14 +583,16 @@ namespace horse_logger
 
 		~Impl()
 		{
+
+#if defined(_WIN32) && defined(_DEBUG)
+      enum { buf_size = 256 };
+      char szTemp[buf_size] = { 0 };
+      _snprintf_s(szTemp, buf_size, "********************  horse logger info -- destroy logger impl module[%s] !!!  ******************** \n", spConfig_->module().c_str());
+      ::OutputDebugStringA(szTemp);
+#endif
+
 			stop();
 			removeSinks();
-
-#ifdef _DEBUG			
-			::OutputDebugStringA("destroy Impl:");
-			::OutputDebugStringA(spConfig_->module().c_str());
-			::OutputDebugStringA("\n");
-#endif
 		}
 
 		bool isInitedByIni()const { return spConfig_->isInitedByIni(); }
@@ -598,19 +618,23 @@ namespace horse_logger
 			if (spAsyncFileSink_)
 			{
 				BOOST_ASSERT(spConfig_->isOutputFile() && spConfig_->isSync() == false);
-
 				try
 				{
-					OutputDebugStringA("stop begin module:");
-					OutputDebugStringA(spConfig_->module().c_str());
-					OutputDebugStringA("\n");
+#if defined(_WIN32) && defined(_DEBUG)
+          enum { buf_size = 256 };
+          char szTemp[buf_size] = { 0 };
+          _snprintf_s(szTemp, buf_size, "********************  horse logger info -- stop logger module[%s] begin !!!  ******************** \n", spConfig_->module().c_str());
+          ::OutputDebugStringA(szTemp);
+#endif
 
-					spAsyncFileSink_->stop();
-					spAsyncFileSink_->flush();
+          spAsyncFileSink_->stop();
+          spAsyncFileSink_->flush();					
 
-					OutputDebugStringA("stop end module:");
-					OutputDebugStringA(spConfig_->module().c_str());
-					OutputDebugStringA("\n");
+#if defined(_WIN32) && defined(_DEBUG)
+          memset(szTemp, 0, sizeof(szTemp));
+          _snprintf_s(szTemp, buf_size, "********************  horse logger info -- stop logger module[%s] end !!!  ******************** \n", spConfig_->module().c_str());
+          ::OutputDebugStringA(szTemp);
+#endif
 				}
 				catch (...)
 				{
@@ -829,16 +853,22 @@ namespace horse_logger
 	private:
 		ImplCenter()
 		{
-#ifdef _DEBUG
-			::OutputDebugStringA("create ImplCenter \n");
+#if defined(_WIN32) && defined(_DEBUG)
+      enum { buf_size = 256 };
+      char szTemp[buf_size] = { 0 };
+      _snprintf_s(szTemp, buf_size, "********************  horse logger info -- create ImplCenter !!!  ******************** \n");
+      ::OutputDebugStringA(szTemp);
 #endif
 		}
 
 	public:
 		~ImplCenter()
 		{
-#ifdef _DEBUG
-			::OutputDebugStringA("destroy ImplCenter \n");
+#if defined(_WIN32) && defined(_DEBUG)
+      enum { buf_size = 256 };
+      char szTemp[buf_size] = { 0 };
+      _snprintf_s(szTemp, buf_size, "********************  horse logger info -- destroy ImplCenter !!!  ******************** \n");
+      ::OutputDebugStringA(szTemp);
 #endif
 		}
 	public:

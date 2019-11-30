@@ -41,8 +41,5 @@
     <ClCompile Include="include\HorseLogger.cpp">
       <Filter>include</Filter>
     </ClCompile>
-    <ClCompile Include="include\common.cpp">
-      <Filter>include</Filter>
-    </ClCompile>
   </ItemGroup>
 </Project>
