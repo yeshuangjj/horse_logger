@@ -357,7 +357,6 @@ namespace horse_logger
 	public:
 		Config(const ConfigInitData &initData);
 		~Config() {}
-		inline bool isInitedByIni()const { return bInitedByIni_; }
 		inline const std::string &module()const { return module_; }
 		inline severity_level minLevel()const { return min_level_; }
 		inline bool isEnableLogger()const { return bEnableLogger_ && (bOutputConsole_ == true || bOutputLogcat_ == true || bOutputFile_ == true); }
@@ -365,7 +364,6 @@ namespace horse_logger
 		inline bool isOutputLogcat()const { return bEnableLogger_ && bOutputLogcat_; }
 		inline bool isOutputFile()const { return bEnableLogger_ && bOutputFile_; }
 		inline bool isSync()const { return bSync_; }
-
 		inline const std::string& outputDir()const { return outputDir_; }
 		inline const std::string& prefix()const { return prefix_; }
 		inline const std::string& extension()const { return extension_; }
@@ -374,7 +372,6 @@ namespace horse_logger
 		void read();
 	private:
 		enum { buf_size = 512 };
-		bool           bInitedByIni_;  //是否是通过 ini配置初始化的
 		std::string    configPath_;
 		std::string    module_;
 
@@ -401,8 +398,7 @@ namespace horse_logger
 	boost::mutex Config::mutex_;
 
 	Config::Config(const ConfigInitData &initData)
-		: bInitedByIni_(false)
-		, configPath_(initData.configPath_)
+    : configPath_(initData.configPath_)
 		, module_(initData.module_)
 		, min_level_(initData.min_level_)
 		, bEnableLogger_(true)
@@ -444,8 +440,8 @@ namespace horse_logger
 
 		lock_t lock(mutex_);  //多线程安全读写同一 ini文件
 
-		bInitedByIni_ = ::GetPrivateProfileIntA(module_.c_str(), "inited", 0, configPath_.c_str()) == 1;
-		if (!bInitedByIni_)
+		bool bInitedByIni = ::GetPrivateProfileIntA(module_.c_str(), "inited", 0, configPath_.c_str()) == 1;
+		if (!bInitedByIni)
 		{
 			::WritePrivateProfileStringA(module_.c_str(), "inited", "1", configPath_.c_str());
 
@@ -594,8 +590,6 @@ namespace horse_logger
 			stop();
 			removeSinks();
 		}
-
-		bool isInitedByIni()const { return spConfig_->isInitedByIni(); }
 
 		void stop()
 		{
